@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+option java_outer_classname = "GrpcProductServer";
+
+package br.com.tony.grpc.example;
+
+service GrpcServerService {
+  rpc CreateProduct(CreateProductInput) returns (ProductOutput) {}
+  rpc DeleteProduct(ProductId) returns (EmptyResponse) {}
+  rpc FindProductById(ProductId) returns (ProductOutput) {}
+  rpc UpdateProduct(UpdateProductInput) returns (EmptyResponse) {}
+}
+
+message EmptyResponse {}
+
+message ProductId {
+  int32 id = 1;
+}
+
+message UpdateProductInput {
+  int32 id = 1;
+  string name = 2;
+  double price = 3;
+}
+
+message CreateProductInput {
+  string name = 1;
+  double price = 2;
+}
+
+message ProductOutput {
+  int32 id = 1;
+  string name = 2;
+  double price = 3;
+}
