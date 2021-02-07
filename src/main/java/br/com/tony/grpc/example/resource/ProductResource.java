@@ -1,8 +1,8 @@
 package br.com.tony.grpc.example.resource;
 
-import br.com.tony.grpc.example.GrpcProductServer;
-import br.com.tony.grpc.example.GrpcServerServiceGrpc;
+import br.com.tony.grpc.example.*;
 import br.com.tony.grpc.example.dto.ProductDTO;
+import br.com.tony.grpc.example.dto.ProductInputDTO;
 import br.com.tony.grpc.example.exception.ProductAlreadyExistsException;
 import br.com.tony.grpc.example.exception.ProductNotFoundException;
 import br.com.tony.grpc.example.service.ProductService;
@@ -23,14 +23,14 @@ public class ProductResource extends GrpcServerServiceGrpc.GrpcServerServiceImpl
     }
 
     @Override
-    public void createProduct(GrpcProductServer.CreateProductInput request, StreamObserver<GrpcProductServer.ProductOutput> responseObserver) {
+    public void createProduct(CreateProductInput request, StreamObserver<ProductOutput> responseObserver) {
         try {
-            ProductDTO productDTO = this.productService.createProduct(ProductDTO.builder()
+            ProductDTO productDTO = this.productService.createProduct(ProductInputDTO.builder()
                     .name(request.getName())
                     .price(request.getPrice())
                     .build());
 
-            GrpcProductServer.ProductOutput response = GrpcProductServer.ProductOutput.newBuilder()
+            ProductOutput response = ProductOutput.newBuilder()
                     .setId(productDTO.getId().intValue())
                     .setName(productDTO.getName())
                     .setPrice(productDTO.getPrice())
@@ -47,10 +47,10 @@ public class ProductResource extends GrpcServerServiceGrpc.GrpcServerServiceImpl
     }
 
     @Override
-    public void deleteProduct(GrpcProductServer.ProductId request, StreamObserver<GrpcProductServer.EmptyResponse> responseObserver) {
+    public void deleteProduct(ProductId request, StreamObserver<EmptyResponse> responseObserver) {
         try {
-            GrpcProductServer.EmptyResponse response = GrpcProductServer.EmptyResponse.newBuilder().build();
             this.productService.deleteProduct(request.getId());
+            EmptyResponse response = EmptyResponse.newBuilder().build();
             responseObserver.onNext(response);
             responseObserver.onCompleted();
         } catch (ProductNotFoundException e) {
@@ -61,11 +61,11 @@ public class ProductResource extends GrpcServerServiceGrpc.GrpcServerServiceImpl
     }
 
     @Override
-    public void findProductById(GrpcProductServer.ProductId request, StreamObserver<GrpcProductServer.ProductOutput> responseObserver) {
+    public void findProductById(ProductId request, StreamObserver<ProductOutput> responseObserver) {
         try {
             ProductDTO productDTO = this.productService.findById(request.getId());
 
-            GrpcProductServer.ProductOutput response = GrpcProductServer.ProductOutput.newBuilder()
+            ProductOutput response = ProductOutput.newBuilder()
                     .setId(productDTO.getId().intValue())
                     .setName(productDTO.getName())
                     .setPrice(productDTO.getPrice())
@@ -82,14 +82,15 @@ public class ProductResource extends GrpcServerServiceGrpc.GrpcServerServiceImpl
     }
 
     @Override
-    public void updateProduct(GrpcProductServer.UpdateProductInput request, StreamObserver<GrpcProductServer.EmptyResponse> responseObserver) {
+    public void updateProduct(UpdateProductInput request, StreamObserver<EmptyResponse> responseObserver) {
         try {
             this.productService.updateProduct(ProductDTO.builder()
                     .id((long) request.getId())
                     .name(request.getName())
                     .price(request.getPrice())
                     .build());
-            GrpcProductServer.EmptyResponse response = GrpcProductServer.EmptyResponse.newBuilder().build();
+
+            EmptyResponse response = EmptyResponse.newBuilder().build();
 
             responseObserver.onNext(response);
             responseObserver.onCompleted();

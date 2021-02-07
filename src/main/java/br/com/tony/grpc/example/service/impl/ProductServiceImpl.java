@@ -1,6 +1,7 @@
 package br.com.tony.grpc.example.service.impl;
 
 import br.com.tony.grpc.example.dto.ProductDTO;
+import br.com.tony.grpc.example.dto.ProductInputDTO;
 import br.com.tony.grpc.example.entity.Product;
 import br.com.tony.grpc.example.exception.ProductAlreadyExistsException;
 import br.com.tony.grpc.example.exception.ProductNotFoundException;
@@ -23,15 +24,15 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductDTO createProduct(ProductDTO productDTO) {
-        if (this.productRepository.findByNameIgnoreCase(productDTO.getName()).isPresent()) {
+    public ProductDTO createProduct(ProductInputDTO productInputDTO) {
+        if (this.productRepository.findByNameIgnoreCase(productInputDTO.getName()).isPresent()) {
             throw new ProductAlreadyExistsException(String.format(
-                    PRODUCT_ALREADY_EXISTS, productDTO.getName()
+                    PRODUCT_ALREADY_EXISTS, productInputDTO.getName()
             ));
         }
         Product product = Product.builder()
-                .name(productDTO.getName())
-                .price(productDTO.getPrice())
+                .name(productInputDTO.getName())
+                .price(productInputDTO.getPrice())
                 .build();
 
         return this.productRepository.save(product).fromProductToProductDTO();
